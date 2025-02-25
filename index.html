@@ -352,6 +352,17 @@
         html {
             scroll-behavior: smooth;
         }
+
+        /* تأثيرات النقر على "اعمالنا" */
+        #our-works {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #our-works:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -368,9 +379,7 @@
             <div class="nav-links">
                 <a href="#about">مين آسوا</a>
                 <a href="#services">خدماتنا</a>
-                <a href="#contact">أعمال</a>
                 <a href="#contact">تواصل</a>
-
             </div>
         </div>
     </nav>
@@ -395,71 +404,76 @@
         </div>
     </section>
 
- <!-- قسم الخدمات -->
-<section id="services" class="section">
-    <h2 class="section-title">خدماتنا</h2>
-    <div class="services-grid">
-        <!-- بطاقة التحليل -->
-        <div class="service-card">
-            <div class="card-content">
-                <img src="HandsAnalytics.png" alt="تحليل" class="service-icon">
-                <h3>تحليل</h3>
-                <p>دراسة متعمقة لمتطلبات الفكرة</p>
+    <!-- قسم الخدمات -->
+    <section id="services" class="section">
+        <h2 class="section-title">خدماتنا</h2>
+        <div class="services-grid">
+            <!-- بطاقة التحليل -->
+            <div class="service-card">
+                <div class="card-content">
+                    <img src="HandsAnalytics.png" alt="تحليل" class="service-icon">
+                    <h3>تحليل</h3>
+                    <p>دراسة متعمقة لمتطلبات الفكرة</p>
+                </div>
             </div>
-        </div>
-        
-        <!-- بطاقة الرسومات -->
-        <div class="service-card">
-            <div class="card-content">
-                <img src="HandsPencil.png" alt="الرسومات" class="service-icon">
-                <h3>الرسومات</h3>
-                <p>رسم ورسوم متحركة وتصاميم</p>
+            
+            <!-- بطاقة الرسومات -->
+            <div class="service-card">
+                <div class="card-content">
+                    <img src="HandsPencil.png" alt="الرسومات" class="service-icon">
+                    <h3>الرسومات</h3>
+                    <p>رسم ورسوم متحركة وتصاميم</p>
+                </div>
             </div>
-        </div>
-        
-        <!-- بطاقة التطوير -->
-        <div class="service-card">
-            <div class="card-content">
-                <img src="HandsPhone.png" alt="تطوير التطبيقات" class="service-icon">
-                <h3>التطوير</h3>
-                <p>تطوير تطبيقات ومواقع الكترونية</p>
+            
+            <!-- بطاقة التطوير -->
+            <div class="service-card">
+                <div class="card-content">
+                    <img src="HandsPhone.png" alt="تطوير التطبيقات" class="service-icon">
+                    <h3>التطوير</h3>
+                    <p>تطوير تطبيقات ومواقع الكترونية</p>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- قسم الأعمال -->
-<section class="section portfolio-section">
-    <h2 class="section-title">أعمال</h2>
-    <div class="services-grid">
-        <a href="https://www.behance.net/gallery/219794965/Portfolio" target="_blank" class="service-card">
-            <div class="card-content">
-                <img src="HandsFolder.png" alt="أعمالنا" class="service-icon">
-                <h3>أعمالنا</h3>
-                <p>استعرض إبداعاتنا السابقة في مجال التصميم والتطوير</p>
-            </div>
-        </a>
-    </div>
-</section>
-    <!-- قسم الاتصال -->
-    <section id="contact" class="section glass-section">
-        <h2 class="section-title">تواصل معنا</h2>
-        <div class="contact-info">
-            <a href="mailto:Aswa_Helper@outlook.com" class="contact-link">
-                <i class="fas fa-envelope"></i>
-                Aswa_Helper@outlook.com
-            </a>
-            <a href="https://twitter.com/Helper_Aswa" class="contact-link">
-                <i class="fab fa-X"></i>
-              حساب التطوير والتحليل  @Helper_Aswa
-            </a>
-        </a>
-        <a href="https://twitter.com/Kopmdl" class="contact-link">
-            <i class="fab fa-X"></i>
-           حساب الرسم @Kopmdl 
-        </a>
         </div>
     </section>
+
+    <!-- قسم الأعمال -->
+    <section class="section portfolio-section">
+        <h2 class="section-title">أعمال</h2>
+        <div class="services-grid">
+            <div id="our-works" class="service-card">
+                <div class="card-content">
+                    <img src="HandsFolder.png" alt="أعمالنا" class="service-icon">
+                    <h3>أعمالنا</h3>
+                    <p>استعرض إبداعاتنا السابقة في مجال التصميم والتطوير</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+  <!-- قسم الاتصال -->
+  <section id="contact" class="section glass-section">
+    <h2 class="section-title">تواصل معنا</h2>
+    <div class="contact-info">
+        <a href="mailto:Aswa_Helper@outlook.com" class="contact-link">
+            <i class="fas fa-envelope"></i>
+            Aswa_Helper@outlook.com
+        </a>
+        <a href="https://twitter.com/Helper_Aswa" class="contact-link">
+            <i class="fab fa-x"></i>
+            @Helper_Aswa
+        </a>
+        <!-- <a href="https://twitter.com/Kopmdl" class="contact-link">
+            <i class="fab fa-x"></i>
+            حساب الرسم @Kopmdl
+        </a> -->
+        <a href="https://www.behance.net/RimahAldaghfaq" class="contact-link">
+            <i class="fab fa-behance"></i>
+            @RimahAldaghfaq
+        </a>
+    </div>
+</section>
 
     <script>
         // إنشاء الجسيمات
@@ -483,16 +497,10 @@
                     animation-duration: ${duration}s;
                     animation-delay: ${delay}s;
                 `;
-                // particle.style.will-change = 'transform';
 
                 container.appendChild(particle);
             }
         }
-
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     createParticles();
-        //     // باقي الكود
-        // });
 
         // تأثير التمرير للعناصر
         document.addEventListener('DOMContentLoaded', () => {
@@ -532,6 +540,12 @@
                 } else {
                     nav.classList.remove('scrolled');
                 }
+            });
+
+            // الانتقال إلى صفحة الأعمال عند النقر
+            const ourWorksDiv = document.getElementById('our-works');
+            ourWorksDiv.addEventListener('click', () => {
+                window.location.href = 'works.html';
             });
         });
     </script>
