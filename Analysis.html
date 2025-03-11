@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحليل - آسوا</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700&display=swap');
+
+        :root {
+            --primary-color: #130311; /* خلفية داكنة */
+            --secondary-color: #ffffff; /* أزرق فاتح لطيف */
+            --accent-color: #ffffff; /* أصفر ذهبي خفيف */
+            --text-color: #d1d5db; /* رمادي فاتح للنصوص */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Changa", sans-serif;
+        }
+
+        body {
+            background: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* خلفية السحب */
+        .clouds-container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            mix-blend-mode: screen;
+        }
+
+        .parallax-clouds {
+            width: 150%;
+            height: 150%;
+            object-fit: cover;
+            animation: cloudMove 120s linear infinite;
+            filter: brightness(0.6) contrast(1.2);
+            opacity: 0.3; /* تقليل شفافية السحب لتخفيف تأثيرها */
+        }
+
+        /* طبقة سوداء نصف شفافة لتخفيف السحب */
+        .clouds-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7); /* طبقة سوداء نصف شفافة */
+            z-index: -1;
+        }
+
+        @keyframes cloudMove {
+            0% { transform: translate(0, 0) scale(1.2); }
+            50% { transform: translate(-10%, -5%) scale(1.25); }
+            100% { transform: translate(0, 0) scale(1.2); }
+        }
+
+        /* التنقل */
+        .glass-nav {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3); /* تحديث لتتناسب مع الخلفية */
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .glass-nav.scrolled {
+            background: rgba(30, 30, 30, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--secondary-color); /* تغيير اللون للتوافق */
+            letter-spacing: -0.5px;
+        }
+
+      
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .glass-nav.scrolled {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        /* القسم الرئيسي */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .hero-content {
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            animation: fadeIn 1s ease;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .hero-emoji {
+            width: 80px;
+            height: 80px;
+            margin-right: 10px;
+            vertical-align: middle;
+            opacity: 0;
+            animation: slideInFromRight 2s ease 0.4s forwards;
+            transition: transform 0.5s ease;
+        }
+
+        .hero-emoji:hover {
+            transform: scale(2.5);
+        }
+
+        @keyframes slideInFromRight {
+            from { opacity: 0; transform: translateX(44px); }
+            to { opacity: 0.8; transform: translateX(0); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            margin-top: 15px;
+            font-weight: 300;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 0.8; transform: translateY(0); }
+        }
+
+        /* الأقسام */
+        .section {
+            padding: 120px 2rem; /* استخدام قيمة ثابتة بدل المتغير */
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-section {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-align: right;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--accent-color);
+        }
+
+        /* الكتل النصية */
+        .text-container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .frosted-glass {
+            padding: 2.5rem;
+            border-radius: 24px;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .frosted-glass:hover {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(25px);
+        }
+
+        /* الخدمات */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem;
+        }
+
+        .emoji-icon-top {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.8;
+            transition: transform 0.3s ease;
+        }
+
+        .emoji-icon-bottom {
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.8;
+            transition: transform 0.3s ease;
+        }
+
+        .frosted-glass:hover .emoji-icon-top,
+        .frosted-glass:hover .emoji-icon-bottom {
+            transform: scale(1.1);
+        }
+
+        .analysis-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* التصميم المتجاوب */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 3rem; }
+            .section-title { font-size: 2rem; }
+            .nav-links { gap: 1.5rem; }
+            .hero-emoji { width: 50px; height: 50px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title { font-size: 2rem; }
+            .section-title { font-size: 1.5rem; }
+            .nav-links a { font-size: 0.9rem; padding: 4px 8px; }
+            .nav-content { padding: 0 1rem; }
+            .emoji-icon-top, .emoji-icon-bottom, .hero-emoji { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية السحب والتغطية السوداء -->
+    <div class="clouds-container">
+        <img src="clouds.png" alt="خلفية سحابية" class="parallax-clouds">
+        <div class="clouds-overlay"></div> <!-- طبقة سوداء نصف شفافة -->
+    </div>
+
+    <!-- التنقل -->
+    <nav class="glass-nav">
+        <div class="nav-content">
+            <span class="brand">آسوا</span>
+            <div class="nav-links">
+                <a href="index.html">الرئيسية</a>
+                <a href="index.html#about">مين آسوا</a>
+                <a href="index.html#services">خدماتنا</a>
+                <a href="index.html#contact">تواصل</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- القسم الرئيسي -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                تحليل
+                <img src="emoji2.png" alt="Emoji Hero" class="hero-emoji">
+            </h1>
+            <p class="hero-subtitle">نحول أفكارك إلى حلول بسلاسة ودقة</p>
+        </div>
+    </section>
+
+    <!-- قسم التحليل -->
+    <section class="section">
+            <h2 class="section-title">كيف نُحــلل الـفـكـرة؟</h2>
+            <div class="text-container">
+                <p class="frosted-glass">
+                    الفكرة ما هي إلا بداية، وعندما نمنح الفكرة الوقت المناسب ينتج عنها حل بسيط. السؤال والتحديات والتحليل وجمع أفضل الحلول الممكنة ليست إلا وسيلة لتفادي الثغرات والمشكلات والعقبات التي قد تعترض طريق الفكرة.
+                    <img src="emoji1.png" alt="Emoji Top" class="emoji-icon-top">
+                    <img src="emoji.png" alt="Emoji Bottom" class="emoji-icon-bottom">
+                </p>
+                <img src="Analysis.jpg" alt="كيف نُحلل" class="analysis-image">
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            window.addEventListener('scroll', () => {
+                const nav = document.querySelector('.glass-nav');
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.glass-section, .frosted-glass').forEach(el => {
+                el.style.opacity = 0;
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'all 0.5s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

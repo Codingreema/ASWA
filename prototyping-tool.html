@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototyping Tool - Creative Freedom</title>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background-color: #2d2d2d;
+            border-bottom: 1px solid #3d3d3d;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            z-index: 20;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #top-bar button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: none;
+            font-size: 18px;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            margin: 0 5px;
+        }
+
+        #top-bar button:hover, #top-bar button.active {
+            background-color: #3d3d3d;
+        }
+
+        #top-bar button span {
+            font-size: 12px;
+            display: block;
+            color: #a0a0a0;
+        }
+
+        #editor-wrapper {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            background-color: #1a1a1a;
+        }
+
+        #editor {
+            position: relative;
+            width: 100vw; /* مساحة تتكيف مع عرض الشاشة */
+            height: calc(100vh - 50px); /* ارتفاع الشاشة مطروحًا شريط الأدوات */
+            background-color: #2d2d2d;
+            cursor: default;
+        }
+
+        .draggable {
+            position: absolute;
+            user-select: none;
+            cursor: move;
+        }
+
+        .resizable { position: absolute; }
+
+        .text {
+            padding: 6px;
+            font-size: 14px;
+            color: #fff;
+            min-width: 40px;
+            min-height: 20px;
+            background: #3d3d3d;
+        }
+
+        .text:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+        }
+
+        .rectangle { background-color: #4a4a4a; }
+        .circle { background-color: #4a4a4a; border-radius: 50%; }
+        .line { background-color: #fff; height: 2px; }
+
+        .selected {
+            box-shadow: 0 0 0 2px #007aff;
+            border: 1px solid #007aff;
+        }
+
+        .hover:hover {
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+        }
+
+        #selectionBox {
+            position: absolute;
+            border: 1px dashed #007aff;
+            background-color: rgba(0, 122, 255, 0.1);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #properties-panel {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            width: 220px;
+            background-color: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 6px;
+            padding: 10px;
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            color: #fff;
+        }
+
+        #properties-panel button {
+            background-color: #3d3d3d;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #properties-panel button:hover {
+            background-color: #4a4a4a;
+        }
+
+        .properties label {
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+
+        .properties input {
+            width: 100%;
+            padding: 5px;
+            font-size: 13px;
+            border: 1px solid #3d3d3d;
+            border-radius: 4px;
+            background-color: #3d3d3d;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .create-cursor {
+            cursor: crosshair !important;
+        }
+
+        /* نصوص توضيحية */
+        .canvas-hint {
+            position: absolute;
+            color: #a0a0a0;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        #hint-create {
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #hint-move {
+            bottom: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="top-bar">
+        <button id="select-mode" onclick="setSelectMode()" title="Select"><span>V</span>⮹</button>
+        <button onclick="setCreateMode('rectangle')" title="Add Rectangle"><span>R</span>□</button>
+        <button onclick="setCreateMode('circle')" title="Add Circle"><span>C</span>〇</button>
+        <button onclick="setCreateMode('text')" title="Add Text"><span>T</span>T</button>
+        <button onclick="setCreateMode('line')" title="Add Line"><span>L</span>―</button>
+        <button onclick="zoomIn()" title="Zoom In"><span>+</span>+</button>
+        <button onclick="zoomOut()" title="Zoom Out"><span>-</span>-</button>
+    </div>
+    <div id="editor-wrapper">
+        <div id="editor" class="editor" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
+            <div id="hint-create" class="canvas-hint">Click to Create Anywhere</div>
+            <div id="hint-move" class="canvas-hint">Drag, Resize & Rotate Freely</div>
+        </div>
+    </div>
+    <div id="properties-panel">
+        <button onclick="deleteSelected()">Delete (Del)</button>
+        <button onclick="undoDelete()">Undo (Ctrl+Z)</button>
+        <div class="properties">
+            <label>X:</label>
+            <input type="number" id="posX" onchange="updateProperties()">
+            <label>Y:</label>
+            <input type="number" id="posY" onchange="updateProperties()">
+            <label>Width:</label>
+            <input type="number" id="width" onchange="updateProperties()">
+            <label>Height:</label>
+            <input type="number" id="height" onchange="updateProperties()">
+            <label>Rotation:</label>
+            <input type="number" id="rotation" onchange="updateProperties()">
+            <label>Fill Color:</label>
+            <input type="color" id="colorPicker" onchange="changeColor(event)">
+        </div>
+    </div>
+    <script>
+        const editorWrapper = document.getElementById('editor-wrapper');
+        const editor = document.getElementById('editor');
+        let selectedElements = [];
+        let deletedHistory = [];
+        let isSelecting = false;
+        let startX, startY;
+        let createMode = null;
+        let scale = 1;
+
+        const selectionBox = document.createElement('div');
+        selectionBox.id = 'selectionBox';
+        editor.appendChild(selectionBox);
+
+        // تحديث حجم القماش عند تغيير حجم النافذة
+        window.addEventListener('resize', () => {
+            editor.style.width = `${window.innerWidth}px`;
+            editor.style.height = `${window.innerHeight - 50}px`;
+        });
+
+        // ضبط الحجم الافتراضي عند التحميل
+        window.addEventListener('load', () => {
+            editor.style.width = `${window.innerWidth}px`;
+            editor.style.height = `${window.innerHeight - 50}px`;
+            editorWrapper.scrollLeft = (editor.offsetWidth - editorWrapper.offsetWidth) / 2;
+            editorWrapper.scrollTop = (editor.offsetHeight - editorWrapper.offsetHeight) / 2;
+            createElementAtPosition('rectangle'); // عنصر افتراضي
+        });
+
+        editor.addEventListener('mousedown', handleMouseDown);
+        editor.addEventListener('mousemove', handleMouseMove);
+        editor.addEventListener('mouseup', handleMouseUp);
+        editor.addEventListener('click', handleCanvasClick);
+
+        function handleMouseDown(event) {
+            if (event.target === editor) {
+                if (createMode) return;
+                isSelecting = true;
+                const rect = editor.getBoundingClientRect();
+                startX = event.clientX - rect.left + editorWrapper.scrollLeft;
+                startY = event.clientY - rect.top + editorWrapper.scrollTop;
+                selectionBox.style.left = `${startX}px`;
+                selectionBox.style.top = `${startY}px`;
+                selectionBox.style.width = '0';
+                selectionBox.style.height = '0';
+                selectionBox.style.display = 'block';
+                selectedElements.forEach(el => el.classList.remove('selected'));
+                selectedElements = [];
+            } else if (event.target.classList.contains('draggable')) {
+                selectElement(event, event.target);
+            }
+        }
+
+        function handleMouseMove(event) {
+            if (isSelecting) updateSelection(event);
+            else if (createMode) editor.classList.add('create-cursor');
+            else editor.classList.remove('create-cursor');
+        }
+
+        function handleMouseUp() {
+            if (isSelecting) endSelection();
+        }
+
+        function handleCanvasClick(event) {
+            if (createMode && event.target === editor) {
+                const rect = editor.getBoundingClientRect();
+                const x = (event.clientX - rect.left + editorWrapper.scrollLeft) / scale;
+                const y = (event.clientY - rect.top + editorWrapper.scrollTop) / scale;
+                createElementAtPosition(createMode, x, y);
+                createMode = null;
+                editor.classList.remove('create-cursor');
+                updateToolStates();
+            }
+        }
+
+        function updateSelection(event) {
+            const rect = editor.getBoundingClientRect();
+            const currentX = event.clientX - rect.left + editorWrapper.scrollLeft;
+            const currentY = event.clientY - rect.top + editorWrapper.scrollTop;
+            const width = currentX - startX;
+            const height = currentY - startY;
+
+            selectionBox.style.width = `${Math.abs(width)}px`;
+            selectionBox.style.height = `${Math.abs(height)}px`;
+            selectionBox.style.left = `${width < 0 ? currentX : startX}px`;
+            selectionBox.style.top = `${height < 0 ? currentY : startY}px`;
+        }
+
+        function endSelection() {
+            isSelecting = false;
+            const box = selectionBox.getBoundingClientRect();
+            const wrapperRect = editorWrapper.getBoundingClientRect();
+            const elements = document.querySelectorAll('.draggable');
+
+            elements.forEach(element => {
+                const elRect = element.getBoundingClientRect();
+                if (
+                    elRect.left >= box.left - wrapperRect.left + editorWrapper.scrollLeft &&
+                    elRect.right <= box.right - wrapperRect.left + editorWrapper.scrollLeft &&
+                    elRect.top >= box.top - wrapperRect.top + editorWrapper.scrollTop &&
+                    elRect.bottom <= box.bottom - wrapperRect.top + editorWrapper.scrollTop
+                ) {
+                    element.classList.add('selected');
+                    selectedElements.push(element);
+                }
+            });
+
+            selectionBox.style.display = 'none';
+            updatePropertiesPanel();
+        }
+
+        function handleTouchStart(event) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            if (event.target === editor) {
+                if (createMode) {
+                    const rect = editor.getBoundingClientRect();
+                    const x = (touch.clientX - rect.left + editorWrapper.scrollLeft) / scale;
+                    const y = (touch.clientY - rect.top + editorWrapper.scrollTop) / scale;
+                    createElementAtPosition(createMode, x, y);
+                    createMode = null;
+                    editor.classList.remove('create-cursor');
+                    updateToolStates();
+                } else {
+                    isSelecting = true;
+                    const rect = editor.getBoundingClientRect();
+                    startX = touch.clientX - rect.left + editorWrapper.scrollLeft;
+                    startY = touch.clientY - rect.top + editorWrapper.scrollTop;
+                    selectionBox.style.left = `${startX}px`;
+                    selectionBox.style.top = `${startY}px`;
+                    selectionBox.style.width = '0';
+                    selectionBox.style.height = '0';
+                    selectionBox.style.display = 'block';
+                    selectedElements.forEach(el => el.classList.remove('selected'));
+                    selectedElements = [];
+                }
+            } else if (event.target.classList.contains('draggable')) {
+                selectElement(event, event.target);
+            }
+        }
+
+        function handleTouchMove(event) {
+            event.preventDefault();
+            const touch = event.touches[0];
+            if (isSelecting) {
+                updateSelection({ clientX: touch.clientX, clientY: touch.clientY });
+            }
+        }
+
+        function handleTouchEnd(event) {
+            event.preventDefault();
+            if (isSelecting) endSelection();
+        }
+
+        function setSelectMode() {
+            createMode = null;
+            editor.classList.remove('create-cursor');
+            updateToolStates();
+        }
+
+        function setCreateMode(type) {
+            createMode = type;
+            editor.classList.add('create-cursor');
+            updateToolStates();
+        }
+
+        function updateToolStates() {
+            const buttons = document.querySelectorAll('#top-bar button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (!createMode) {
+                document.getElementById('select-mode').classList.add('active');
+            } else {
+                const activeBtn = document.querySelector(`#top-bar button[onclick="setCreateMode('${createMode}')"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+            }
+        }
+
+        function createElementAtPosition(type, x, y) {
+            let element;
+            const target = editor;
+
+            if (x === undefined || y === undefined) {
+                x = (editor.offsetWidth - 120) / 2;
+                y = (editor.offsetHeight - 80) / 2;
+            }
+
+            switch (type) {
+                case 'rectangle':
+                    element = document.createElement('div');
+                    element.className = 'draggable resizable rectangle hover';
+                    element.style.width = '1250px';
+                    element.style.height = '680px';
+                    break;
+                case 'circle':
+                    element = document.createElement('div');
+                    element.className = 'draggable resizable circle hover';
+                    element.style.width = '80px';
+                    element.style.height = '80px';
+                    break;
+                case 'text':
+                    element = document.createElement('div');
+                    element.className = 'draggable resizable text hover';
+                    element.innerText = 'Type here';
+                    element.contentEditable = true;
+                    break;
+                case 'line':
+                    element = document.createElement('div');
+                    element.className = 'draggable resizable line hover';
+                    element.style.width = '100px';
+                    break;
+            }
+
+            if (element) {
+                element.onclick = (e) => selectElement(e, element);
+                element.style.transform = `translate(${x - (parseFloat(element.style.width) || 80) / 2}px, ${y - (parseFloat(element.style.height) || 80) / 2}px)`;
+                target.appendChild(element);
+                makeInteractive(element, type === 'circle');
+            }
+        }
+
+        function selectElement(event, element) {
+            event.stopPropagation();
+            if (event.shiftKey) {
+                toggleSelection(element);
+            } else {
+                selectedElements.forEach(el => el.classList.remove('selected'));
+                selectedElements = [element];
+                element.classList.add('selected');
+            }
+            updatePropertiesPanel();
+        }
+
+        function toggleSelection(element) {
+            if (selectedElements.includes(element)) {
+                element.classList.remove('selected');
+                selectedElements = selectedElements.filter(el => el !== element);
+            } else {
+                element.classList.add('selected');
+                selectedElements.push(element);
+            }
+        }
+
+        function deleteSelected() {
+            if (!selectedElements.length) return;
+            deletedHistory.push(...selectedElements.map(el => ({ element: el, parent: el.parentNode, styles: { ...el.style } })));
+            selectedElements.forEach(el => el.remove());
+            selectedElements = [];
+            updatePropertiesPanel();
+        }
+
+        function undoDelete() {
+            if (!deletedHistory.length) return;
+            const lastDeleted = deletedHistory.pop();
+            lastDeleted.parent.appendChild(lastDeleted.element);
+            Object.assign(lastDeleted.element.style, lastDeleted.styles);
+            updatePropertiesPanel();
+        }
+
+        function changeColor(event) {
+            selectedElements.forEach(element => {
+                element.style.backgroundColor = event.target.value;
+                if (element.className.includes('text')) element.style.color = event.target.value;
+            });
+        }
+
+        function updatePropertiesPanel() {
+            const panel = document.getElementById('properties-panel');
+            const posX = document.getElementById('posX');
+            const posY = document.getElementById('posY');
+            const width = document.getElementById('width');
+            const height = document.getElementById('height');
+            const rotation = document.getElementById('rotation');
+            const colorPicker = document.getElementById('colorPicker');
+
+            panel.style.display = selectedElements.length ? 'flex' : 'none';
+
+            if (selectedElements.length === 1) {
+                const el = selectedElements[0];
+                const transform = el.style.transform.match(/translate\(([^,]+)px,\s*([^)]+)px\)(?:\s*rotate\(([^)]+)deg\))?/) || [0, 0, 0, 0];
+                posX.value = parseFloat(transform[1]) || 0;
+                posY.value = parseFloat(transform[2]) || 0;
+                width.value = parseFloat(el.style.width) || el.offsetWidth;
+                height.value = parseFloat(el.style.height) || el.offsetHeight;
+                rotation.value = parseFloat(transform[3]) || 0;
+                colorPicker.value = rgbToHex(el.style.backgroundColor || '#4a4a4a');
+            } else {
+                posX.value = posY.value = width.value = height.value = rotation.value = '';
+                colorPicker.value = '#4a4a4a';
+            }
+        }
+
+        function updateProperties() {
+            const posX = document.getElementById('posX').value;
+            const posY = document.getElementById('posY').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const rotation = document.getElementById('rotation').value;
+
+            selectedElements.forEach(el => {
+                if (posX !== '') el.setAttribute('data-x', posX);
+                if (posY !== '') el.setAttribute('data-y', posY);
+                const rot = rotation !== '' ? `rotate(${rotation}deg)` : '';
+                el.style.transform = `translate(${posX || 0}px, ${posY || 0}px) ${rot}`;
+                if (width) el.style.width = `${width}px`;
+                if (height) el.style.height = `${height}px`;
+            });
+        }
+
+        function rgbToHex(rgb) {
+            if (!rgb || rgb === 'transparent') return '#4a4a4a';
+            const [r, g, b] = rgb.match(/\d+/g)?.map(Number) || [74, 74, 74];
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        }
+
+        function makeInteractive(element, isCircle = false) {
+            interact(element)
+                .draggable({
+                    inertia: true,
+                    autoScroll: true,
+                    modifiers: [
+                        interact.modifiers.restrictRect({
+                            restriction: editor,
+                            endOnly: false
+                        })
+                    ],
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx / scale;
+                            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy / scale;
+                            const rotation = target.getAttribute('data-rotation') || 0;
+                            target.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+                            target.setAttribute('data-x', x);
+                            target.setAttribute('data-y', y);
+                            updatePropertiesPanel();
+                        }
+                    }
+                })
+                .resizable({
+                    edges: { left: true, right: true, bottom: true, top: true },
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            let { width, height } = event.rect;
+                            if (isCircle) {
+                                const size = Math.max(width, height);
+                                target.style.width = `${size}px`;
+                                target.style.height = `${size}px`;
+                            } else {
+                                target.style.width = `${width}px`;
+                                target.style.height = `${height}px`;
+                            }
+                            updatePropertiesPanel();
+                        }
+                    },
+                    modifiers: [
+                        interact.modifiers.restrictSize({ min: { width: 10, height: 2 } })
+                    ],
+                    inertia: true
+                })
+                .rotatable({
+                    listeners: {
+                        move(event) {
+                            const target = event.target;
+                            const rotation = (parseFloat(target.getAttribute('data-rotation')) || 0) + event.da;
+                            const x = parseFloat(target.getAttribute('data-x')) || 0;
+                            const y = parseFloat(target.getAttribute('data-y')) || 0;
+                            target.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
+                            target.setAttribute('data-rotation', rotation);
+                            updatePropertiesPanel();
+                        }
+                    }
+                });
+        }
+
+        function zoomIn() {
+            scale += 0.1;
+            editor.style.transform = `scale(${scale})`;
+            editorWrapper.scrollLeft *= 1.1;
+            editorWrapper.scrollTop *= 1.1;
+        }
+
+        function zoomOut() {
+            scale = Math.max(0.1, scale - 0.1);
+            editor.style.transform = `scale(${scale})`;
+            editorWrapper.scrollLeft /= 1.1;
+            editorWrapper.scrollTop /= 1.1;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Delete') deleteSelected();
+            if (event.ctrlKey && event.key === 'z') undoDelete();
+            if (event.key === 'v') setSelectMode();
+            if (event.key === 'r') setCreateMode('rectangle');
+            if (event.key === 'c') setCreateMode('circle');
+            if (event.key === 't') setCreateMode('text');
+            if (event.key === 'l') setCreateMode('line');
+        });
+
+        setSelectMode();
+    </script>
+</body>
+</html>

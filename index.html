@@ -6,13 +6,7 @@
     <title>آسوا - حلول مستقبلية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* تعريف الخط الجديد */
-        @font-face {
-            font-family: 'BitsyFontArabic';
-            src: url('fonts/bitsy-font-with-arabic.otf') format('opentype');
-            font-weight: normal;
-            font-style: normal;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Changa:wght@300;500;700&display=swap');
 
         :root {
             --primary-color: #ffffff;
@@ -26,7 +20,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'BitsyFontArabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: "Changa", sans-serif;
         }
 
         body {
@@ -87,21 +81,21 @@
 
         /* التنقل */
         .glass-nav {
-            position: fixed;
+            position: sticky;
             top: 0;
             width: 100%;
             z-index: 1000;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 15px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .nav-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -254,27 +248,50 @@
         }
 
         .service-card {
-            background: rgba(0, 0, 0, 0.25); /* خلفية شفافة */
-            backdrop-filter: blur(20px); /* تأثير البلور */
-            -webkit-backdrop-filter: blur(20px); /* لدعم المتصفحات القديمة */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* حدود خفيفة */
-            border-radius: 20px; /* زوايا مدورة */
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             padding: 2rem;
             transition: all 0.3s ease;
             color: #ffffff;
+            position: relative;
+            text-decoration: none;
         }
 
         .service-card:hover {
-            background: rgba(0, 0, 0, 0.35); /* خلفية أغمق عند التحويم */
-            backdrop-filter: blur(25px); /* زيادة تأثير البلور */
-            transform: translateY(-10px); /* حركة خفيفة للأعلى */
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); /* ظل أكبر */
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(25px);
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
 
         .service-icon {
             width: 80px;
             height: 80px;
             margin-bottom: 1.5rem;
+        }
+
+        .service-emoji {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 50px;
+            height: 50px;
+            opacity: 0.8;
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover .service-emoji {
+            transform: scale(1.1);
+        }
+
+        .feature-text {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            margin-top: 0.5rem;
+            font-weight: 500;
         }
 
         /* الاتصال */
@@ -309,51 +326,24 @@
 
         /* التصميم المتجاوب */
         @media (max-width: 768px) {
-            .hero-title {
-                font-size: 4rem;
-            }
-            
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-content {
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                gap: 1.5rem;
-            }
-            
-            .nav-links a {
-                font-size: 1rem;
-            }
+            .hero-title { font-size: 4rem; }
+            .services-grid { grid-template-columns: 1fr; }
+            .nav-content { padding: 1rem; }
+            .nav-links { gap: 1.5rem; }
+            .nav-links a { font-size: 1rem; }
         }
 
         @media (max-width: 480px) {
-            .hero-title {
-                font-size: 3rem;
-            }
-            
-            .frosted-glass {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            .section-title {
-                font-size: 2.2rem;
-            }
-            
-            .service-card {
-                padding: 1.5rem;
-            }
+            .hero-title { font-size: 3rem; }
+            .frosted-glass { padding: 1.5rem; margin: 1rem; }
+            .section-title { font-size: 2.2rem; }
+            .service-card { padding: 1.5rem; }
         }
 
         html {
             scroll-behavior: smooth;
         }
 
-        /* تأثيرات النقر على "اعمالنا" */
         #our-works {
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -387,10 +377,8 @@
     <!-- القسم الرئيسي -->
     <section class="hero">
         <div class="hero-content">
-            <h1 class="hero-title">
-                <span class="hero-title">آسوا.</span>
-            </h1>
-            <p class="hero-content"> فــكــر، واحنا ننجز</p>
+            <h1 class="hero-title"><span class="hero-title">آسوا.</span></h1>
+            <p class="hero-subtitle">فــكــر، واحنا ننجز</p>
         </div>
     </section>
 
@@ -408,24 +396,22 @@
     <section id="services" class="section">
         <h2 class="section-title">خدماتنا</h2>
         <div class="services-grid">
-            <!-- بطاقة التحليل -->
-            <div class="service-card">
+            <!-- بطاقة التحليل مع رابط -->
+            <a href="Analysis.html" target="_blank" class="service-card">
                 <div class="card-content">
-                    <img src="HandsAnalytics.png" alt="تحليل" class="service-icon">
+                    <img src="emoji2.png" alt="تحليل" class="service-icon">
                     <h3>تحليل</h3>
                     <p>دراسة متعمقة لمتطلبات الفكرة</p>
                 </div>
-            </div>
-            
+            </a>
             <!-- بطاقة الرسومات -->
             <div class="service-card">
                 <div class="card-content">
-                    <img src="HandsPencil.png" alt="الرسومات" class="service-icon">
+                    <img src="draw.png" alt="الرسومات" class="service-icon">
                     <h3>الرسومات</h3>
                     <p>رسم ورسوم متحركة وتصاميم</p>
                 </div>
             </div>
-            
             <!-- بطاقة التطوير -->
             <div class="service-card">
                 <div class="card-content">
@@ -434,6 +420,16 @@
                     <p>تطوير تطبيقات ومواقع الكترونية</p>
                 </div>
             </div>
+            <!-- بطاقة Prototyping Tool -->
+            <a href="prototyping-tool.html" target="_blank" class="service-card">
+                <div class="card-content">
+                    <img src="tool.png" alt="أداة مجانية للتصميم" class="service-icon">
+                    <h3>أداة مجانية للتصميم</h3>
+                    <p>إنشاء نماذج أولية لحرية الإبداع ويمكنك من خلالها توضيح ماترغب به  </p>
+                    <p class="feature-text">ميزة حصرية: تصميم تفاعلي سريع</p>
+                    <img src="emoji1.png" alt="Emoji" class="service-emoji">
+                </div>
+            </a>
         </div>
     </section>
 
@@ -451,29 +447,24 @@
         </div>
     </section>
 
-
-  <!-- قسم الاتصال -->
-  <section id="contact" class="section glass-section">
-    <h2 class="section-title">تواصل معنا</h2>
-    <div class="contact-info">
-        <a href="mailto:Aswa_Helper@outlook.com" class="contact-link">
-            <i class="fas fa-envelope"></i>
-            Aswa_Helper@outlook.com
-        </a>
-        <a href="https://twitter.com/Helper_Aswa" class="contact-link">
-            <i class="fab fa-x"></i>
-            @Helper_Aswa
-        </a>
-        <!-- <a href="https://twitter.com/Kopmdl" class="contact-link">
-            <i class="fab fa-x"></i>
-            حساب الرسم @Kopmdl
-        </a> -->
-        <a href="https://www.behance.net/RimahAldaghfaq" class="contact-link">
-            <i class="fab fa-behance"></i>
-            @RimahAldaghfaq
-        </a>
-    </div>
-</section>
+    <!-- قسم الاتصال -->
+    <section id="contact" class="section glass-section">
+        <h2 class="section-title">تواصل معنا</h2>
+        <div class="contact-info">
+            <a href="mailto:Aswa_Helper@outlook.com" class="contact-link">
+                <i class="fas fa-envelope"></i>
+                Aswa_Helper@outlook.com
+            </a>
+            <a href="https://twitter.com/Helper_Aswa" class="contact-link">
+                <i class="fab fa-x"></i>
+                @Helper_Aswa
+            </a>
+            <a href="https://www.behance.net/RimahAldaghfaq" class="contact-link">
+                <i class="fab fa-behance"></i>
+                @RimahAldaghfaq
+            </a>
+        </div>
+    </section>
 
     <script>
         // إنشاء الجسيمات
@@ -522,7 +513,6 @@
                 observer.observe(el);
             });
 
-            // تأثير التمرير السلس
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -532,7 +522,6 @@
                 });
             });
 
-            // تأثير التنقل عند التمرير
             window.addEventListener('scroll', () => {
                 const nav = document.querySelector('.glass-nav');
                 if (window.scrollY > 50) {
@@ -542,7 +531,6 @@
                 }
             });
 
-            // الانتقال إلى صفحة الأعمال عند النقر
             const ourWorksDiv = document.getElementById('our-works');
             ourWorksDiv.addEventListener('click', () => {
                 window.location.href = 'works.html';
